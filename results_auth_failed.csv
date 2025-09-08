@@ -1,0 +1,3 @@
+user,ip,line
+invaliduser,127.0.0.1,Sep  8 04:52:14 bootcamp-virtual-machine sshd[5584]: Failed password for invalid user invaliduser from 127.0.0.1 port 52884 ssh2
+invaliduser,127.0.0.1,Sep  8 04:52:27 bootcamp-virtual-machine sshd[5584]: Failed password for invalid user invaliduser from 127.0.0.1 port 52884 ssh2
