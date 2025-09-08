@@ -58,4 +58,12 @@
 - **Réseau** : Nmap détecté dans Wireshark + Firewall, mais pas dans Sysmon → normal et documenté.
 - **Livrables complets** disponibles dans ce dossier.
 
+## 📝 Points clés appris
+- Sysmon loggue les process (ID 1) mais pas le trafic entrant.  
+- Event ID 4688 (création de process) = complément à Sysmon.  
+- Firewall Windows (`pfirewall.log`) trace les connexions entrantes.  
+- Wireshark permet de valider visuellement le scan Nmap.  
+- Python peut automatiser l’analyse de logs Linux (`auth.log`).  
+
+
 Jour 1 terminé 🚀
