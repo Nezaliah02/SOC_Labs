@@ -1,0 +1,64 @@
+<dashboard version="1.1" theme="light">
+  <label>SOC - Alertes</label>
+  <description>Vue centralisée des alertes déclenchées (Triggered Alerts).</description>
+
+  <!-- Time picker -->
+  <row>
+    <panel>
+      <input type="time" token="tok_time">
+        <label>Time range</label>
+        <default>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+    </panel>
+  </row>
+
+  <!-- Liste des alertes déclenchées -->
+  <row>
+    <panel>
+      <title>Alertes déclenchées</title>
+      <table>
+        <search>
+          <query>
+            index=_audit action="alert_fired" earliest=$tok_time.earliest$ latest=$tok_time.latest$
+            | table _time user info severity action search_name
+            | sort - _time
+          </query>
+        </search>
+        <option name="wrap">true</option>
+        <option name="count">20</option>
+      </table>
+    </panel>
+  </row>
+
+  <!-- Nombre d'alertes par type -->
+  <row>
+    <panel>
+      <title>Alertes par type</title>
+      <chart>
+        <search>
+          <query>
+            index=_audit action="alert_fired" earliest=$tok_time.earliest$ latest=$tok_time.latest$
+            | stats count by search_name
+            | sort - count
+          </query>
+        </search>
+        <option name="charting.chart">bar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Timeline des alertes</title>
+      <chart>
+        <search>
+          <query>
+            index=_audit action="alert_fired" earliest=$tok_time.earliest$ latest=$tok_time.latest$
+            | timechart count by search_name
+          </query>
+        </search>
+        <option name="charting.chart">column</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>
