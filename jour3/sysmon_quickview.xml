@@ -1,0 +1,135 @@
+<dashboard version="1.1" theme="light">
+  <label>Sysmon Quickview</label>
+  <description>Vue rapide des événements Sysmon : process, réseau, DNS, fichiers, parent→child suspects.</description>
+
+  <row>
+    <panel>
+      <input type="time" token="tok_time">
+        <label>Time range</label>
+        <default>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="text" token="tok_index">
+        <label>Index</label>
+        <default>main</default>
+      </input>
+      <input type="text" token="tok_sourcetype">
+        <label>Sourcetype Sysmon</label>
+        <default>WinEventLog:Microsoft-Windows-Sysmon/Operational</default>
+      </input>
+    </panel>
+  </row>
+
+  <!-- Process Create -->
+  <row>
+    <panel>
+      <title>Processus créés (EventID=1)</title>
+      <table>
+        <search>
+          <query>
+            index=$tok_index$ sourcetype="$tok_sourcetype$" EventCode=1 earliest=$tok_time.earliest$ latest=$tok_time.latest$
+            | table _time host User Image CommandLine ParentImage ParentCommandLine
+            | sort - _time
+            | head 200
+          </query>
+        </search>
+      </table>
+    </panel>
+    <panel>
+      <title>Top processus (EventID=1)</title>
+      <chart>
+        <search>
+          <query>
+            index=$tok_index$ sourcetype="$tok_sourcetype$" EventCode=1 earliest=$tok_time.earliest$ latest=$tok_time.latest$
+            | stats count BY Image
+            | sort - count
+            | head 15
+          </query>
+        </search>
+        <option name="charting.chart">bar</option>
+      </chart>
+    </panel>
+  </row>
+
+  <!-- Réseau -->
+  <row>
+    <panel>
+      <title>Connexions réseau (EventID=3)</title>
+      <table>
+        <search>
+          <query>
+            index=$tok_index$ sourcetype="$tok_sourcetype$" EventCode=3 earliest=$tok_time.earliest$ latest=$tok_time.latest$
+            | table _time host User Image Protocol SourceIp SourcePort DestinationIp DestinationPort
+            | sort - _time
+            | head 200
+          </query>
+        </search>
+      </table>
+    </panel>
+    <panel>
+      <title>Top destinations (IP:Port)</title>
+      <chart>
+        <search>
+          <query>
+            index=$tok_index$ sourcetype="$tok_sourcetype$" EventCode=3 earliest=$tok_time.earliest$ latest=$tok_time.latest$
+            | eval dest=DestinationIp.":".DestinationPort
+            | stats count BY dest
+            | sort - count
+            | head 15
+          </query>
+        </search>
+        <option name="charting.chart">bar</option>
+      </chart>
+    </panel>
+  </row>
+
+  <!-- DNS -->
+  <row>
+    <panel>
+      <title>Requêtes DNS (EventID=22)</title>
+      <table>
+        <search>
+          <query>
+            index=$tok_index$ sourcetype="$tok_sourcetype$" EventCode=22 earliest=$tok_time.earliest$ latest=$tok_time.latest$
+            | table _time host User Image QueryName QueryStatus
+            | sort - _time
+            | head 200
+          </query>
+        </search>
+      </table>
+    </panel>
+    <panel>
+      <title>Top domaines interrogés</title>
+      <chart>
+        <search>
+          <query>
+            index=$tok_index$ sourcetype="$tok_sourcetype$" EventCode=22 earliest=$tok_time.earliest$ latest=$tok_time.latest$
+            | stats count BY QueryName
+            | sort - count
+            | head 15
+          </query>
+        </search>
+        <option name="charting.chart">bar</option>
+      </chart>
+    </panel>
+  </row>
+
+  <!-- Fichiers créés -->
+  <row>
+    <panel>
+      <title>Fichiers créés (EventID=11)</title>
+      <table>
+        <search>
+          <query>
+            index=$tok_index$ sourcetype="$tok_sourcetype$" EventCode=11 earliest=$tok_time.earliest$ latest=$tok_time.latest$
+            | table _time host User Image TargetFilename
+            | sort - _time
+            | head 200
+          </query>
+        </search>
+      </table>
+    </panel>
+  </row>
+</dashboard>
