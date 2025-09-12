@@ -1,0 +1,69 @@
+<dashboard version="1.1" theme="light">
+  <label>SOC - Process Monitoring</label>
+  <description>Vue SOC L1 sur les processus Windows (Sysmon EventID=1)</description>
+
+  <row>
+    <panel>
+      <title>Derniers processus créés</title>
+      <table>
+        <search>
+          <query>
+            index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+            | table _time host User Image CommandLine ParentImage ParentCommandLine
+            | sort - _time
+            | head 20
+          </query>
+        </search>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Top 15 processus exécutés</title>
+      <chart>
+        <search>
+          <query>
+            index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+            | stats count BY Image
+            | sort - count
+            | head 15
+          </query>
+        </search>
+        <option name="charting.chart">bar</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Process suspects connus</title>
+      <table>
+        <search>
+          <query>
+            index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+            | search Image="*powershell.exe" OR Image="*cmd.exe" OR Image="*mimikatz.exe"
+            | table _time host User Image CommandLine ParentImage
+            | sort - _time
+          </query>
+        </search>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Process rares</title>
+      <table>
+        <search>
+          <query>
+            index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+            | stats count BY Image
+            | sort count
+            | head 20
+          </query>
+        </search>
+      </table>
+    </panel>
+  </row>
+</dashboard>
